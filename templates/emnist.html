@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手寫字母辨識</title>
+    <style>
+        canvas {
+            border: 3px solid black;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>手寫字母辨識</h1>
+    <canvas id="canvas" width="280" height="280"></canvas>
+    <br>
+    <button onclick="clearCanvas()">清除</button>
+    <button onclick="recognize()">辨識</button>
+    <p id="result"></p>
+
+    <a href="/"><button>切換到數字辨識</button></a>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!isDrawing) return;
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(event.offsetX, event.offsetY, brushSize=15,5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function recognize() {
+            const data = canvas.toDataURL('image/png');
+            fetch('/predict_emnist', {
+                method: 'POST',
+                body: JSON.stringify({ image: data }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = `辨識結果：${data.result}`;
+            })
+            .catch(error => {
+                console.error('錯誤：', error);
+            });
+        }
+
+        // 初始化畫布背景
+        clearCanvas();
+    </script>
+</body>
+</html>

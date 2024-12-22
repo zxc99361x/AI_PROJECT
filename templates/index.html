@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手寫數字辨識</title>
+    <style>
+        canvas {
+            border: 3px solid black;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>手寫數字辨識</h1>
+    <canvas id="canvas" width="280" height="280"></canvas>
+    <br>
+    <button onclick="clearCanvas()">清除</button>
+    <button onclick="recognize()">辨識</button>
+    <p id="result"></p>
+
+    <a href="/emnist"><button>切換到字母辨識</button></a>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // 初始化畫布時設置背景為白色
+        function initializeCanvas() {
+            ctx.fillStyle = 'white'; // 設置背景顏色為白色
+            ctx.fillRect(0, 0, canvas.width, canvas.height); // 填滿整個畫布
+        }
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!isDrawing) return;
+            ctx.fillStyle = 'black'; // 設置筆觸顏色為黑色
+            ctx.beginPath();
+            ctx.arc(event.offsetX, event.offsetY, brushSize=15,5, 0, 2 * Math.PI); // 畫圓
+            ctx.fill();
+        }
+
+        function clearCanvas() {
+            // 清除畫布並重新設置背景為白色
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            initializeCanvas();
+        }
+
+        function recognize() {
+            const data = canvas.toDataURL('image/png');
+            fetch('/predict', {
+                method: 'POST',
+                body: JSON.stringify({ image: data }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 確保這裡正確顯示後端返回的結果
+                document.getElementById('result').innerText = `辨識結果：${data.result}`;
+            })
+            .catch(error => {
+                console.error('錯誤：', error);
+            });
+        }
+
+        // 初始化畫布
+        initializeCanvas();
+    </script>
+</body>
+</html>
