@@ -4,3 +4,7 @@
 *.jpeg
 *.zip
 *.tar.gz
+*.csv
+*.ipynb
+*.pyc
+__pycache__/
