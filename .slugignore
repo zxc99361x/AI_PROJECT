@@ -1,3 +1,6 @@
-*.png
 *.h5
-train_model.py
+*.png
+*.jpg
+*.jpeg
+*.zip
+*.tar.gz
