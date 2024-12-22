@@ -4,3 +4,9 @@
 *.log
 *.txt
 tests/
+emnist_model.h5
+mnist_model.h5
+訓練.png
+received_image.png
+preprocessed_image.png
+
