@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # 載入模型
 model = tf.keras.models.load_model("mnist_model.h5")
-emnist_model = tf.keras.models.load_model("emnist_model.h5")
+emnist_model = tf.keras.models.load_model("emnist_letters_model.h5")
 
 
 emnist_mapping = [
